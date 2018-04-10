@@ -194,4 +194,53 @@ class Bounds:
         if p.y <= self.ymin:
             p.y = self.ymin
         return p
+
+    def hitboxtrim(self,agent):
+        p = agent.position.copy()
+        radbuf = agent.size/2
+
+        if p.x + radbuf >= self.xmax:
+            p.x = self.xmax - radbuf
+        if p.y + radbuf >= self.ymax:
+            p.y = self.ymax - radbuf
+        if p.x - radbuf <= self.xmin:
+            p.x = self.xmin + radbuf
+        if p.y - radbuf <= self.ymin:
+            p.y = self.ymin + radbuf
+
+        return p
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
