@@ -72,9 +72,8 @@ class Projectile(Agent):
         leading_edge = self.position + self.velocity.over(4.0)
         if (leading_edge.x > self.world.wallbounds.xmax) or (leading_edge.x < self.world.wallbounds.xmin) or (leading_edge.y > self.world.wallbounds.ymax) or (leading_edge.y < self.world.wallbounds.ymin):
             self.world.remove(self)
-        if (self.world.character.position-self.position).magnitude() < self.hit_radius:
+        if (self.world.character.position-self.position).magnitude() - self.world.character.hit_radius < self.hit_radius:
             self.world.gameover = True
-            print('GAME OVER!')
 
 
 

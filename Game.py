@@ -79,9 +79,10 @@ class Game(Frame):
         self.bind_all('<KeyPress>',self.keypress)
         self.bind_all('<KeyRelease>',self.keyrelease)
         
-        self.canvas.pack()
+        self.grid()
+        self.canvas.grid()
 
-        self.pack()
+        
 
     def trim(self,agent):
         if self.topology == 'wrapped':
@@ -124,8 +125,6 @@ class Game(Frame):
         x = self.bounds.xmin
         y = self.bounds.ymin
         points = [ ((p.x - x)*wh/h, wh - (p.y - y)* wh/h) for p in shape ]
-        #first_point = points[0]
-        #points.append(first_point)
         self.canvas.create_polygon(points, fill=color, smooth=1)
 
 

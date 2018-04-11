@@ -17,6 +17,7 @@ class controllable(Agent):
     def __init__(self,position,size,world):
         super().__init__(position,world)
         self.size = size
+        self.hit_radius = 0.4
 
     def shape(self):
         upperright = self.position + Vector2D(self.size/2,self.size/2)
@@ -56,6 +57,7 @@ class KarlGame(Game):
             lr = (l-1)*11.25
             self.cannons.append(Launcher(Point2D(self.wallbounds.xmax,float(lr)),Vector2D(-1.0,0.0),self))
         self.gameover = False
+        self.pause = False
 
     def keypress(self,event):
         if event.keysym == 'Up':
@@ -66,6 +68,10 @@ class KarlGame(Game):
             self.character.change_direction(True,self.character.LEFT_VECTOR)
         if event.keysym == 'Right':
             self.character.change_direction(True,self.character.RIGHT_VECTOR)
+        if event.keysym == 'Escape':
+            self.pause = True
+        if event.char == 'q':
+            self.gameover = True
         if event.char == ' ':
             for gun in self.cannons:
                 gun.fire()
@@ -84,12 +90,18 @@ class KarlGame(Game):
         agent.position = self.wallbounds.hitboxtrim(agent)
 
     def gameoverscreen(self):
+        overFrame = Frame(self.root)
+        Label(overFrame,text='GAME OVER',background='green').grid(row=0)
+        Button(overFrame,text='restart',activebackground='gray',bg='green').grid(row=1)
+
+        restartbutton = Button
+        overwindow = self.canvas.create_window(self.WINDOW_WIDTH//2,self.WINDOW_HEIGHT//2,window=overFrame)
+        
         self.root.mainloop()
 
 game = KarlGame(3.0)
-
+#game.startscreen()
 while not game.gameover:
     sleep(1.0/60.0)
     game.update()
-
 game.gameoverscreen()
