@@ -118,6 +118,17 @@ class Game(Frame):
         points.append(first_point)
         self.canvas.create_polygon(points, fill=color)
 
+    def draw_oval(self, shape, color):
+        wh,ww = self.WINDOW_HEIGHT,self.WINDOW_WIDTH
+        h = self.bounds.height()
+        x = self.bounds.xmin
+        y = self.bounds.ymin
+        points = [ ((p.x - x)*wh/h, wh - (p.y - y)* wh/h) for p in shape ]
+        #first_point = points[0]
+        #points.append(first_point)
+        self.canvas.create_polygon(points, fill=color, smooth=1)
+
+
     def clear(self):
         self.canvas.delete('all')
         self.canvas.create_rectangle(0, 0, self.WINDOW_WIDTH, self.WINDOW_HEIGHT, fill="#000000")
