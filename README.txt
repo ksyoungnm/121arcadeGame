@@ -1,6 +1,7 @@
 # 121arcadeGame
 
 Project for CS121
-Making an Arcade Game and I'm using this as a place to keep code?
-Fun stuff
-wooha
+
+basic platform - 12pts.
+losing - 1pt.
+tracking? - 2pts.
