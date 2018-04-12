@@ -82,8 +82,6 @@ class Game(Frame):
         self.grid()
         self.canvas.grid()
 
-        
-
     def trim(self,agent):
         if self.topology == 'wrapped':
             agent.position = self.bounds.wrap(agent.position)

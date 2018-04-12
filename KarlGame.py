@@ -42,22 +42,20 @@ class KarlGame(Game):
 
         super().__init__('KarlGame',60.0,45.0,800,600,topology='bound')
 
-        self.character = controllable(Point2D(),0.6,self)
-        self.wall = Walls(wallwidth,self)
+        
         self.wallbounds = Bounds(self.bounds.xmin+wallwidth,self.bounds.ymin+wallwidth,self.bounds.xmax-wallwidth,self.bounds.ymax-wallwidth)
+        self.wallwidth=wallwidth
         self.cannons = []
-        for i in range(-15,30,15):
-            self.cannons.append(Launcher(Point2D(float(i),self.wallbounds.ymin),Vector2D(0.0,1.0),self))
-        for j in range(-15,30,15):
-            self.cannons.append(Launcher(Point2D(float(j),self.wallbounds.ymax),Vector2D(0.0,-1.0),self))
-        for k in range(3):
-            kr = (k-1)*11.25
-            self.cannons.append(Launcher(Point2D(self.wallbounds.xmin,float(kr)),Vector2D(1.0,0.0),self))
-        for l in range(3):
-            lr = (l-1)*11.25
-            self.cannons.append(Launcher(Point2D(self.wallbounds.xmax,float(lr)),Vector2D(-1.0,0.0),self))
+        self.overFrame = Frame(self.root)
+
+        
         self.gameover = False
         self.pause = False
+
+        Label(self.overFrame,text='Hello!',background='yellow').grid(row=0)
+        Button(self.overFrame,text='Play Game',command=self.newstart).grid(row=1)
+        self.canvas.create_window(self.WINDOW_WIDTH//2,self.WINDOW_HEIGHT//2,window=self.overFrame)
+        self.root.mainloop()
 
     def keypress(self,event):
         if event.keysym == 'Up':
@@ -89,19 +87,42 @@ class KarlGame(Game):
     def walltrim(self,agent):
         agent.position = self.wallbounds.hitboxtrim(agent)
 
-    def gameoverscreen(self):
-        overFrame = Frame(self.root)
-        Label(overFrame,text='GAME OVER',background='green').grid(row=0)
-        Button(overFrame,text='restart',activebackground='gray',bg='green').grid(row=1)
+    # def pausescreen(self):
 
-        restartbutton = Button
-        overwindow = self.canvas.create_window(self.WINDOW_WIDTH//2,self.WINDOW_HEIGHT//2,window=overFrame)
+    def gameoverscreen(self):
+        self.overFrame = Frame(self.root)
+        Label(self.overFrame,text='GAME OVER',background='green').grid(row=0)
+        Button(self.overFrame,text='restart',command=self.newstart).grid(row=1)
+        
+        self.canvas.create_window(self.WINDOW_WIDTH//2,self.WINDOW_HEIGHT//2,window=self.overFrame)
         
         self.root.mainloop()
 
+    def newstart(self):
+        self.gameover = False
+        self.PlayGame()
+
+    def PlayGame(self):
+        self.overFrame.destroy()
+        self.agents = []
+        self.cannons = []
+        self.wall = Walls(self.wallwidth,self)
+        self.character = controllable(Point2D(),0.6,self)
+        for i in range(-15,30,15):
+            self.cannons.append(Launcher(Point2D(float(i),self.wallbounds.ymin),Vector2D(0.0,1.0),self))
+        for j in range(-15,30,15):
+            self.cannons.append(Launcher(Point2D(float(j),self.wallbounds.ymax),Vector2D(0.0,-1.0),self))
+        for k in range(3):
+            kr = (k-1)*11.25
+            self.cannons.append(Launcher(Point2D(self.wallbounds.xmin,float(kr)),Vector2D(1.0,0.0),self))
+        for l in range(3):
+            lr = (l-1)*11.25
+            self.cannons.append(Launcher(Point2D(self.wallbounds.xmax,float(lr)),Vector2D(-1.0,0.0),self))
+        self.gameover = False
+        while not self.gameover:
+            sleep(1.0/60.0)
+            self.update()
+        self.gameoverscreen()
+
 game = KarlGame(3.0)
-#game.startscreen()
-while not game.gameover:
-    sleep(1.0/60.0)
-    game.update()
-game.gameoverscreen()
+game.PlayGame()
