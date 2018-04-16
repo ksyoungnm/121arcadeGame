@@ -1,4 +1,4 @@
-from Game import Agent
+from Agent import Agent
 from geometry import Vector2D, Point2D
 
 class Launcher(Agent):

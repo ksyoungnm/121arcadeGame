@@ -1,40 +1,42 @@
-from Game import *
-from geometry import Vector2D
+from tkinter import *
+from Game import Game
+from geometry import Vector2D, Point2D, Bounds
 from Projectile import Launcher
 from time import sleep
+from Walls import Walls
+from random import choice
+from Agent import controllable
 
-TIME_STEP = 0.5
+# class controllable(Agent):
 
-class controllable(Agent):
+#     MAX_SPEED = 0.5
 
-    MAX_SPEED = 0.5
+#     UP_VECTOR = Vector2D(0.0,1.0)
+#     DOWN_VECTOR = Vector2D(0.0,-1.0)
+#     LEFT_VECTOR = Vector2D(-1.0,0.0)
+#     RIGHT_VECTOR = Vector2D(1.0,0.0)
 
-    UP_VECTOR = Vector2D(0.0,1.0)
-    DOWN_VECTOR = Vector2D(0.0,-1.0)
-    LEFT_VECTOR = Vector2D(-1.0,0.0)
-    RIGHT_VECTOR = Vector2D(1.0,0.0)
+#     def __init__(self,position,size,world):
+#         super().__init__(position,world)
+#         self.size = size
+#         self.hit_radius = 0.4
 
-    def __init__(self,position,size,world):
-        super().__init__(position,world)
-        self.size = size
-        self.hit_radius = 0.4
+#     def shape(self):
+#         upperright = self.position + Vector2D(self.size/2,self.size/2)
+#         lowerright = self.position + Vector2D(-self.size/2,self.size/2)
+#         lowerleft = self.position + Vector2D(-self.size/2,-self.size/2)
+#         upperleft = self.position + Vector2D(self.size/2,-self.size/2)
+#         return [upperright,lowerright,lowerleft,upperleft]
 
-    def shape(self):
-        upperright = self.position + Vector2D(self.size/2,self.size/2)
-        lowerright = self.position + Vector2D(-self.size/2,self.size/2)
-        lowerleft = self.position + Vector2D(-self.size/2,-self.size/2)
-        upperleft = self.position + Vector2D(self.size/2,-self.size/2)
-        return [upperright,lowerright,lowerleft,upperleft]
+#     def change_direction(self,movestop,direction):
+#         if movestop:
+#             self.velocity = self.velocity + direction * MAX_SPEED
+#         else:
+#             self.velocity = self.velocity - direction * MAX_SPEED
 
-    def change_direction(self,movestop,direction):
-        if movestop:
-            self.velocity = self.velocity + direction * TIME_STEP
-        else:
-            self.velocity = self.velocity - direction * TIME_STEP
-
-    def update(self):
-        self.position = self.position + (self.velocity.direction() * self.MAX_SPEED)
-        self.world.walltrim(self)
+#     def update(self):
+#         self.position = self.position + (self.velocity.direction() * self.MAX_SPEED)
+#         self.world.walltrim(self)
 
 class KarlGame(Game):
 
@@ -87,8 +89,6 @@ class KarlGame(Game):
     def walltrim(self,agent):
         agent.position = self.wallbounds.hitboxtrim(agent)
 
-    # def pausescreen(self):
-
     def gameoverscreen(self):
         self.overFrame = Frame(self.root)
         Label(self.overFrame,text='GAME OVER',background='green').grid(row=0)
@@ -119,9 +119,16 @@ class KarlGame(Game):
             lr = (l-1)*11.25
             self.cannons.append(Launcher(Point2D(self.wallbounds.xmax,float(lr)),Vector2D(-1.0,0.0),self))
         self.gameover = False
+        self.update()
+        sleep(1.0)
+        counter = 0
         while not self.gameover:
+            if counter == 10:
+                choice(self.cannons).fire()
+                counter = 0
             sleep(1.0/60.0)
             self.update()
+            counter += 1
         self.gameoverscreen()
 
 game = KarlGame(3.0)
