@@ -14,14 +14,21 @@ class Game(Frame):
 
         self.root = Tk()
         self.root.title(name)
+        
         Frame.__init__(self, self.root)
-        
-
-        self.canvas = Canvas(self.root, width=self.WINDOW_WIDTH, height=self.WINDOW_HEIGHT)
-        
 
         self.bind_all('<KeyPress>',self.keypress)
         self.bind_all('<KeyRelease>',self.keyrelease)
+
+        self.canvas = Canvas(self, width=self.WINDOW_WIDTH, height=self.WINDOW_HEIGHT)
+        
+        self.overFrame = Frame(self)
+        
+        self.startMenu = Frame(self.overFrame)
+        self.pauseMenu = Frame(self.overFrame)
+        self.overMenu = Frame(self.overFrame)
+
+        
         
         self.grid()
         self.canvas.grid()

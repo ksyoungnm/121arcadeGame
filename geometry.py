@@ -171,6 +171,13 @@ class Bounds:
         y = self.ymin + fractiony * self.height()
         return Point2D(x,y)
 
+    def scale_in(self,scalar):
+        new_xmin = self.xmin + scalar 
+        new_xmax = self.xmax - scalar
+        new_ymin = self.ymin + scalar
+        new_ymax = self.ymax - scalar
+        return Bounds(new_xmin,new_ymin,new_xmax,new_ymax)
+
     def wrap(self,position):
         p = position.copy()
         while p.x >= self.xmax:

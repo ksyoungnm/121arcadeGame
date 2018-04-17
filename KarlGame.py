@@ -7,37 +7,6 @@ from Walls import Walls
 from random import choice
 from Agent import controllable
 
-# class controllable(Agent):
-
-#     MAX_SPEED = 0.5
-
-#     UP_VECTOR = Vector2D(0.0,1.0)
-#     DOWN_VECTOR = Vector2D(0.0,-1.0)
-#     LEFT_VECTOR = Vector2D(-1.0,0.0)
-#     RIGHT_VECTOR = Vector2D(1.0,0.0)
-
-#     def __init__(self,position,size,world):
-#         super().__init__(position,world)
-#         self.size = size
-#         self.hit_radius = 0.4
-
-#     def shape(self):
-#         upperright = self.position + Vector2D(self.size/2,self.size/2)
-#         lowerright = self.position + Vector2D(-self.size/2,self.size/2)
-#         lowerleft = self.position + Vector2D(-self.size/2,-self.size/2)
-#         upperleft = self.position + Vector2D(self.size/2,-self.size/2)
-#         return [upperright,lowerright,lowerleft,upperleft]
-
-#     def change_direction(self,movestop,direction):
-#         if movestop:
-#             self.velocity = self.velocity + direction * MAX_SPEED
-#         else:
-#             self.velocity = self.velocity - direction * MAX_SPEED
-
-#     def update(self):
-#         self.position = self.position + (self.velocity.direction() * self.MAX_SPEED)
-#         self.world.walltrim(self)
-
 class KarlGame(Game):
 
     def __init__(self,wallwidth):
@@ -45,18 +14,21 @@ class KarlGame(Game):
         super().__init__('KarlGame',60.0,45.0,800,600,topology='bound')
 
         
-        self.wallbounds = Bounds(self.bounds.xmin+wallwidth,self.bounds.ymin+wallwidth,self.bounds.xmax-wallwidth,self.bounds.ymax-wallwidth)
-        self.wallwidth=wallwidth
+        self.wallbounds = self.bounds.scale_in(wallwidth)
+
+
+        self.wallwidth = wallwidth
+
+
         self.cannons = []
-        self.overFrame = Frame(self.root)
 
         
         self.gameover = False
         self.pause = False
 
-        Label(self.overFrame,text='Hello!',background='yellow').grid(row=0)
-        Button(self.overFrame,text='Play Game',command=self.newstart).grid(row=1)
-        self.canvas.create_window(self.WINDOW_WIDTH//2,self.WINDOW_HEIGHT//2,window=self.overFrame)
+        Label(self.startMenu,text='Hello!',background='yellow').grid(row=0)
+        Button(self.startMenu,text='Play Game',command=self.startGame).grid(row=1)
+        self.startMenu.grid()
         self.root.mainloop()
 
     def keypress(self,event):
@@ -72,9 +44,6 @@ class KarlGame(Game):
             self.pause = True
         if event.char == 'q':
             self.gameover = True
-        if event.char == ' ':
-            for gun in self.cannons:
-                gun.fire()
 
     def keyrelease(self,event):
         if event.keysym == 'Up':
@@ -102,11 +71,18 @@ class KarlGame(Game):
         self.gameover = False
         self.PlayGame()
 
-    def PlayGame(self):
-        self.overFrame.destroy()
+    def startGame(self):
+
+        self.gameover = False
+
+        self.startMenu = 
         self.agents = []
         self.cannons = []
+
         self.wall = Walls(self.wallwidth,self)
+
+
+
         self.character = controllable(Point2D(),0.6,self)
         for i in range(-15,30,15):
             self.cannons.append(Launcher(Point2D(float(i),self.wallbounds.ymin),Vector2D(0.0,1.0),self))
