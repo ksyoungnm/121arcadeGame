@@ -55,6 +55,17 @@ class Game(Frame):
                 self.draw_oval(agent.shape(),agent.color())
         Frame.update(self)
 
+
+    def worldToWall(self,blist):
+        wh,ww = self.WINDOW_HEIGHT,self.WINDOW_WIDTH
+        h = self.bounds.height()
+        x = self.bounds.xmin
+        y = self.bounds.ymin
+        ul = blist[0]
+        br = blist[1]
+        points = [ ((ul.x - x)*wh/h , wh - (ul.y - y)* wh/h) ] + [ (((br.x - x)*wh/h) + 1 , wh - ((br.y - y)* wh/h) + 1) ]
+        return points
+
     def worldToPixel(self,shape):
         wh,ww = self.WINDOW_HEIGHT,self.WINDOW_WIDTH
         h = self.bounds.height()

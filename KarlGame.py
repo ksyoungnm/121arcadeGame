@@ -10,7 +10,7 @@ class KarlGame(Game):
 
     def __init__(self):
 
-        super().__init__('KarlGame',60.0,45.0,800,600,topology='bound')
+        super().__init__('KarlGame',80.0,60.0,800,600,topology='bound')
 
         self.wallwidth = 3.0
         self.wallbounds = self.bounds.scale_in(self.wallwidth)
@@ -23,11 +23,11 @@ class KarlGame(Game):
         self.gameover = False
         self.pause = False
 
-        temframe = Frame(self)
-        self.canvas.create_window(400,300,window = temframe)
+        self.overFrame = Frame(self)
+        self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame)
 
-        Label(temframe,text='Hello!',background='yellow').grid(row=0)
-        Button(temframe,text='Play Game',command=self.startGame).grid(row=1)
+        Label(self.overFrame,text='Hello!',background='yellow').grid(row=0)
+        Button(self.overFrame,text='Play Game',command=self.startGame).grid(row=1)
 
         # Label(self.overMenu,text='GAME OVER',background='green').grid(row=0)
         # Button(self.overMenu,text='Restart?',command=self.startGame).grid(row=1)
@@ -78,15 +78,15 @@ class KarlGame(Game):
         top = float(self.bounds.ymax)
         wide = float(self.wallwidth)
 
-        w1 = self.twopointBox(Point2D(-side,top),Point2D(side,top-wide))
-        w2 = self.twopointBox(Point2D(side-wide,top-wide),Point2D(side,-top+wide))
-        w3 = self.twopointBox(Point2D(-side,-top+wide),Point2D(side,-top))
-        w4 = self.twopointBox(Point2D(-side,top-wide),Point2D(-side+wide,-top+wide))
+        w1 = self.worldToWall([Point2D(-side,top),Point2D(side,top-wide)])
+        w2 = self.worldToWall([Point2D(side-wide,top-wide),Point2D(side,-top+wide)])
+        w3 = self.worldToWall([Point2D(-side,-top+wide),Point2D(side,-top)])
+        w4 = self.worldToWall([Point2D(-side,top-wide),Point2D(-side+wide,-top+wide)])
 
-        self.walls.append(self.draw_poly(w1,'#FFFFFF','wall'))
-        self.walls.append(self.draw_poly(w2,'#FFFFFF','wall'))
-        self.walls.append(self.draw_poly(w3,'#FFFFFF','wall'))
-        self.walls.append(self.draw_poly(w4,'#FFFFFF','wall'))
+        self.walls.append(self.canvas.create_rectangle(w1, fill='#FFFFFF',tags='wall'))
+        self.walls.append(self.canvas.create_rectangle(w2, fill='#FFFFFF',tags='wall'))
+        self.walls.append(self.canvas.create_rectangle(w3, fill='#FFFFFF',tags='wall'))
+        self.walls.append(self.canvas.create_rectangle(w4, fill='#FFFFFF',tags='wall'))
 
     # def gameoverscreen(self):
     #     self.overFrame = Frame(self.root)
@@ -98,9 +98,6 @@ class KarlGame(Game):
     #     self.root.mainloop()
 
     def startGame(self):
-
-        self.overFrame.grid_remove()
-        self.canvas.grid()
 
         self.gameover = False
         self.character = None
