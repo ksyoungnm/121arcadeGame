@@ -22,16 +22,10 @@ class Game(Frame):
 
         self.canvas = Canvas(self, width=self.WINDOW_WIDTH, height=self.WINDOW_HEIGHT)
         
-        self.overFrame = Frame(self)
-        
-        self.startMenu = Frame(self.overFrame)
-        self.pauseMenu = Frame(self.overFrame)
-        self.overMenu = Frame(self.overFrame)
-
-        
-        
         self.grid()
         self.canvas.grid()
+        
+        
 
     def trim(self,agent):
         if self.topology == 'wrapped':
@@ -40,6 +34,9 @@ class Game(Frame):
             agent.position = self.bounds.clip(agent.position)
         elif self.topology == 'open':
             pass
+
+    def walltrim(self,agent):
+        agent.position = self.wallbounds.hitboxtrim(agent)
 
     def add(self, agent):
         self.agents.append(agent)
@@ -58,24 +55,36 @@ class Game(Frame):
                 self.draw_oval(agent.shape(),agent.color())
         Frame.update(self)
 
-    def draw_poly(self, shape, color):
+
+    def worldToWall(self,blist):
+        wh,ww = self.WINDOW_HEIGHT,self.WINDOW_WIDTH
+        h = self.bounds.height()
+        x = self.bounds.xmin
+        y = self.bounds.ymin
+        ul = blist[0]
+        br = blist[1]
+        points = [ ((ul.x - x)*wh/h , wh - (ul.y - y)* wh/h) ] + [ (((br.x - x)*wh/h) + 1 , wh - ((br.y - y)* wh/h) + 1) ]
+        return points
+
+    def worldToPixel(self,shape):
         wh,ww = self.WINDOW_HEIGHT,self.WINDOW_WIDTH
         h = self.bounds.height()
         x = self.bounds.xmin
         y = self.bounds.ymin
         points = [ ((p.x - x)*wh/h, wh - (p.y - y)* wh/h) for p in shape ]
+        return points
+
+    def draw_poly(self, shape, color, tags):
+        points = self.worldToPixel(shape)
         first_point = points[0]
         points.append(first_point)
-        self.canvas.create_polygon(points, fill=color)
+        return self.canvas.create_polygon(points, fill=color, tags=tags)
 
-    def draw_oval(self, shape, color):
-        wh,ww = self.WINDOW_HEIGHT,self.WINDOW_WIDTH
-        h = self.bounds.height()
-        x = self.bounds.xmin
-        y = self.bounds.ymin
-        points = [ ((p.x - x)*wh/h, wh - (p.y - y)* wh/h) for p in shape ]
-        self.canvas.create_polygon(points, fill=color, smooth=1)
-
+    def draw_oval(self, shape, color, tags):
+        points = self.worldToPixel(shape)
+        first_point = points[0]
+        points.append(first_point)
+        return self.canvas.create_polygon(points, fill=color, smooth=1, tags=tags)
 
     def clear(self):
         self.canvas.delete('all')
