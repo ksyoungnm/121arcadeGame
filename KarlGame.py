@@ -23,11 +23,15 @@ class KarlGame(Game):
         self.gameover = False
         self.pause = False
 
-        self.overFrame = Frame(self)
+        self.overFrame = Frame(self,bg='purple')
         self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame)
 
-        Label(self.overFrame,text='Hello!',background='yellow').grid(row=0)
-        Button(self.overFrame,text='Play Game',command=self.startGame).grid(row=1)
+        Label(self.overFrame,text='Hello!',bg='purple',fg='white').grid(row=0)
+        fl = Label(self.overFrame,text='Play Game',background='purple',foreground='white')
+        fl.grid(row=1)
+        fl.bind('<Enter>',self.enterExit)
+        fl.bind('<Leave>',self.enterExit)
+        fl.bind('<Button-1>',self.startGame)
 
         # Label(self.overMenu,text='GAME OVER',background='green').grid(row=0)
         # Button(self.overMenu,text='Restart?',command=self.startGame).grid(row=1)
@@ -35,6 +39,12 @@ class KarlGame(Game):
 
         # self.startMenu.grid()
         self.root.mainloop()
+
+    def enterExit(self,event):
+        e = event.widget
+        bg = e.cget('background')
+        fg = e.cget('foreground')
+        e.configure(background=fg,foreground=bg)
 
     def update(self):
         self.character.update()
@@ -74,19 +84,19 @@ class KarlGame(Game):
         return [p1,p2,p3,p4]
 
     def makeWalls(self):
-        side = float(self.bounds.xmax)
-        top = float(self.bounds.ymax)
-        wide = float(self.wallwidth)
+        ww = self.WINDOW_WIDTH
+        wh = self.WINDOW_HEIGHT
+        wide = self.wallwidth * wh/self.bounds.height()
 
-        w1 = self.worldToWall([Point2D(-side,top),Point2D(side,top-wide)])
-        w2 = self.worldToWall([Point2D(side-wide,top-wide),Point2D(side,-top+wide)])
-        w3 = self.worldToWall([Point2D(-side,-top+wide),Point2D(side,-top)])
-        w4 = self.worldToWall([Point2D(-side,top-wide),Point2D(-side+wide,-top+wide)])
-
-        self.walls.append(self.canvas.create_rectangle(w1, fill='#FFFFFF',tags='wall'))
-        self.walls.append(self.canvas.create_rectangle(w2, fill='#FFFFFF',tags='wall'))
-        self.walls.append(self.canvas.create_rectangle(w3, fill='#FFFFFF',tags='wall'))
-        self.walls.append(self.canvas.create_rectangle(w4, fill='#FFFFFF',tags='wall'))
+        w1 = [(0,0),(ww+1,wide+1)]
+        w2 = [(ww-wide,wide),(ww+1,wh-wide+1)]
+        w3 = [(0,wh-wide),(ww+1,wh+1)]
+        w4 = [(0,wide),(wide+1,wh-wide+1)]
+        
+        self.walls.append(self.canvas.create_rectangle(w1, fill='#FFFFFF',width=0,tags='wall'))
+        self.walls.append(self.canvas.create_rectangle(w2, fill='#FFFFFF',width=0,tags='wall'))
+        self.walls.append(self.canvas.create_rectangle(w3, fill='#FFFFFF',width=0,tags='wall'))
+        self.walls.append(self.canvas.create_rectangle(w4, fill='#FFFFFF',width=0,tags='wall'))
 
     # def gameoverscreen(self):
     #     self.overFrame = Frame(self.root)
@@ -97,7 +107,7 @@ class KarlGame(Game):
         
     #     self.root.mainloop()
 
-    def startGame(self):
+    def startGame(self,event):
 
         self.gameover = False
         self.character = None
@@ -106,11 +116,14 @@ class KarlGame(Game):
         self.walls = []
 
         self.canvas.delete('all')
-        self.canvas.create_rectangle((0,0),(self.WINDOW_WIDTH,self.WINDOW_HEIGHT),fill='#000000',tags='backdrop')
+        self.canvas.create_rectangle((0,0),(self.WINDOW_WIDTH+1,self.WINDOW_HEIGHT+1),fill='#000000',tags='backdrop')
 
         self.makeWalls()
 
         self.character = controllable(Point2D(),0.6,self)
+
+        self.canvas.xview_moveto(0.0)
+        self.canvas.yview_moveto(0.0)
 
         while True:
             sleep(1.0/60.0)

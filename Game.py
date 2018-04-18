@@ -20,7 +20,7 @@ class Game(Frame):
         self.bind_all('<KeyPress>',self.keypress)
         self.bind_all('<KeyRelease>',self.keyrelease)
 
-        self.canvas = Canvas(self, width=self.WINDOW_WIDTH, height=self.WINDOW_HEIGHT)
+        self.canvas = Canvas(self, width=self.WINDOW_WIDTH, height=self.WINDOW_HEIGHT, bg='purple')
         
         self.grid()
         self.canvas.grid()
