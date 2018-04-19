@@ -31,37 +31,38 @@ class Launcher(Agent):
     def fire(self):
         Projectile(self.position,self.direction,self.world)
 
-# class Projectile(Agent):
+class Projectile(Agent):
 
-#     MAX_SPEED = 0.5
+    MAX_SPEED = 0.5
 
 
-#     def __init__(self,position,velocity,world):
-#         super().__init__(position,world)
-#         self.velocity = velocity
-#         self.shapekind = 'oval'
-#         self.size = 0.6
-#         self.v0 = self.velocity.over(2.0) + self.velocity.perp().over(4.0)
-#         self.v1 = self.velocity.over(2.0) + -self.velocity.perp().over(4.0)
-#         self.v2 = -self.velocity.over(2.0) + -self.velocity.perp().over(4.0)
-#         self.v3 = -self.velocity.over(2.0) + self.velocity.perp().over(4.0)
-#         self.hit_radius = 0.4
+    def __init__(self,position,velocity,world):
+        super().__init__(position,world)
+        self.velocity = velocity
+        self.shapekind = 'oval'
+        self.size = 0.6
+        self.v0 = self.velocity.over(2.0) + self.velocity.perp().over(4.0)
+        self.v1 = self.velocity.over(2.0) + -self.velocity.perp().over(4.0)
+        self.v2 = -self.velocity.over(2.0) + -self.velocity.perp().over(4.0)
+        self.v3 = -self.velocity.over(2.0) + self.velocity.perp().over(4.0)
+        self.hit_radius = 0.4
+        self.world.bullets.append(self)
 
-#     def shape(self):
-#         p0 = self.position + self.v0
-#         p1 = self.position + self.v1
-#         p2 = self.position + self.v2
-#         p3 = self.position + self.v3
-#         return [p0,p1,p2,p3]
+    def shape(self):
+        p0 = self.position + self.v0
+        p1 = self.position + self.v1
+        p2 = self.position + self.v2
+        p3 = self.position + self.v3
+        return [p0,p1,p2,p3]
 
-#     def color(self):
-#         return "#FF0000"
+    def color(self):
+        return "#FF0000"
 
-#     def update(self):
-#         self.position = self.position + (self.velocity * self.MAX_SPEED)
-#         leading_edge = self.position + self.velocity.over(4.0)
-#         if (leading_edge.x > self.world.wallbounds.xmax) or (leading_edge.x < self.world.wallbounds.xmin) or (leading_edge.y > self.world.wallbounds.ymax) or (leading_edge.y < self.world.wallbounds.ymin):
-#             self.world.remove(self)
+    def update(self):
+        self.position = self.position + (self.velocity * self.MAX_SPEED)
+        leading_edge = self.position + self.velocity.over(4.0)
+        if (leading_edge.x > self.world.wallbounds.xmax) or (leading_edge.x < self.world.wallbounds.xmin) or (leading_edge.y > self.world.wallbounds.ymax) or (leading_edge.y < self.world.wallbounds.ymin):
+            self.world.remove(self)
 #         if (self.world.character.position-self.position).magnitude() - self.world.character.hit_radius < self.hit_radius:
 #             self.world.gameover = True
 

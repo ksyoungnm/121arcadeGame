@@ -46,6 +46,7 @@ class Game(Frame):
 
     def remove(self, agent):
         self.agents.remove(agent)
+        self.bullets.remove(agent)
 
     # def update(self):
     #     for agent in self.agents:
@@ -87,11 +88,11 @@ class Game(Frame):
         points.append(first_point)
         return self.canvas.create_polygon(points, width=0, fill=color, tags=tags)
 
-    # def draw_oval(self, shape, color, tags):
-    #     points = self.worldToPixel(shape)
-    #     first_point = points[0]
-    #     points.append(first_point)
-    #     return self.canvas.create_polygon(points, fill=color, smooth=1, tags=tags)
+    def draw_oval(self, shape, color, tags):
+        points = self.worldToPixel(shape)
+        first_point = points[0]
+        points.append(first_point)
+        return self.canvas.create_polygon(points, width=0, fill=color, smooth=1, tags=tags)
 
     # def clear(self):
     #     self.canvas.delete('all')

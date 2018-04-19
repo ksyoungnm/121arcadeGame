@@ -3,7 +3,7 @@ from Game import Game
 from geometry import Vector2D, Point2D, Bounds
 from Projectile import Launcher
 from time import sleep
-# from random import choice
+from random import choice
 from Agent import Controllable
 
 class KarlGame(Game):
@@ -62,7 +62,7 @@ class KarlGame(Game):
             missile.update()
         self.canvas.delete('bullets')
         for missile in self.bullets:
-            self.draw_poly(missile.shape(),missile.color(),'bullets')
+            self.draw_oval(missile.shape(),missile.color(),'bullets')
 
         Frame.update(self)
 
@@ -136,16 +136,21 @@ class KarlGame(Game):
 
         self.character = Controllable(Point2D(),1.0,self)
 
-        for i in range(-15,30,15):
+        for i in range(-20,40,20):
             self.cannons.append(Launcher(Point2D(float(i),self.wallbounds.ymin),Vector2D(0.0,1.0),self))
             self.cannons.append(Launcher(Point2D(float(i),self.wallbounds.ymax),Vector2D(0.0,-1.0),self))
         for k in range(3):
-            kr = (k-1)*11.25
+            kr = (k-1)*15
             self.cannons.append(Launcher(Point2D(self.wallbounds.xmin,float(kr)),Vector2D(1.0,0.0),self))
             self.cannons.append(Launcher(Point2D(self.wallbounds.xmax,float(kr)),Vector2D(-1.0,0.0),self))
 
-            
+        counter=0   
         while True:
+            if counter == 10:
+                choice(self.cannons).fire()
+                counter=0
+            else:
+                counter += 1
             sleep(1.0/60.0)
             self.update()
 
