@@ -22,23 +22,41 @@ class KarlGame(Game):
         
         self.gameover = False
         self.pause = False
+        self.score = IntVar()
+        self.highscore = IntVar()
 
         self.overFrame = Frame(self,bg='purple')
-        self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame)
 
-        Label(self.overFrame,text='Hello!',bg='purple',fg='white').grid(row=0)
-        fl = Label(self.overFrame,text='Play Game',background='purple',foreground='white')
-        fl.grid(row=1)
-        fl.bind('<Enter>',self.enterExit)
-        fl.bind('<Leave>',self.enterExit)
-        fl.bind('<Button-1>',self.startGame)
+        self.startLabel = Label(self.overFrame,text='Hello!',bg='purple',fg='white')
+        self.startButton = Label(self.overFrame,text='Play Game',background='purple',foreground='white')
+        self.startButton.bind('<Enter>',self.enterExit)
+        self.startButton.bind('<Leave>',self.enterExit)
+        self.startButton.bind('<Button-1>',self.startGame)
 
-        # Label(self.overMenu,text='GAME OVER',background='green').grid(row=0)
-        # Button(self.overMenu,text='Restart?',command=self.startGame).grid(row=1)
-        # Button(self.overMenu,text='Main Menu',command=self.mainMenu).grid(row=2)
+        self.restartLabel = Label(self.overFrame,text='Game Over!',bg='purple',fg='white')
+        self.restartButton = Label(self.overFrame,text='Restart',background='purple',foreground='white')
+        self.restartButton.bind('<Enter>',self.enterExit)
+        self.restartButton.bind('<Leave>',self.enterExit)
+        self.restartButton.bind('<Button-1>',self.startGame)
 
-        # self.startMenu.grid()
+        self.startMenu()
+
         self.root.mainloop()
+
+    def startMenu(self):
+        self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame,tags='menu')
+        self.startLabel.grid(row=0)
+        self.startButton.grid(row=1)
+        self.overFrame.focus_set()
+
+    def restartMenu(self):
+        for widget in self.overFrame.winfo_children():
+            widget.grid_forget()
+        self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame,tags='menu')
+        self.restartLabel.grid(row=0)
+        self.restartButton.configure(background='purple',fg='white')
+        self.restartButton.grid(row=1)
+        self.overFrame.focus_set()
 
     def enterExit(self,event):
         e = event.widget
@@ -63,6 +81,12 @@ class KarlGame(Game):
         self.canvas.delete('bullets')
         for missile in self.bullets:
             self.draw_oval(missile.shape(),missile.color(),'bullets')
+
+        b = self.worldToPixel([full_points[0],full_points[2]])
+        l = self.canvas.find_overlapping(b[0][0],b[0][1],b[1][0],b[1][1])
+        for thing in l:
+            if 'bullets' in self.canvas.gettags(thing):
+                self.gameover = True
 
         Frame.update(self)
 
@@ -129,6 +153,8 @@ class KarlGame(Game):
         self.bullets = []
         self.walls = []
 
+        self.score.set(0)
+
         self.canvas.delete('all')
         self.canvas.create_rectangle((0,0),(self.WINDOW_WIDTH+1,self.WINDOW_HEIGHT+1),fill='#000000',tags='backdrop')
 
@@ -144,15 +170,33 @@ class KarlGame(Game):
             self.cannons.append(Launcher(Point2D(self.wallbounds.xmin,float(kr)),Vector2D(1.0,0.0),self))
             self.cannons.append(Launcher(Point2D(self.wallbounds.xmax,float(kr)),Vector2D(-1.0,0.0),self))
 
-        counter=0   
-        while True:
-            if counter == 10:
+
+        while not self.gameover:
+            if self.score.get() % 10 == 5:
                 choice(self.cannons).fire()
-                counter=0
-            else:
-                counter += 1
+            self.score.set(self.score.get()+1)
             sleep(1.0/60.0)
             self.update()
+
+        score = self.score.get()
+        highscore = self.highscore.get()
+
+        if score > highscore:
+            self.highscore.set(score)
+            print('-----------------------------')
+            print('Congrats! New Highscore! Wow!')
+        else:
+            print('-----------------------------')
+        print('Highscore: '+str(self.highscore.get()))
+        print('Your score: '+str(score))
+        print('-----------------------------')
+
+
+        self.restartMenu()
+        Frame.update(self)
+        self.root.mainloop()
+
+
 
         
 
