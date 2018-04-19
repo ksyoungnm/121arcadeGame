@@ -202,9 +202,9 @@ class Bounds:
             p.y = self.ymin
         return p
 
-    def hitboxtrim(self,agent):
-        p = agent.position.copy()
-        radbuf = agent.size/2
+    def hitboxtrim(self,position,size):
+        p = position.copy()
+        radbuf = size
 
         if p.x + radbuf >= self.xmax:
             p.x = self.xmax - radbuf

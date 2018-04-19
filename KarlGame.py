@@ -1,10 +1,10 @@
 from tkinter import *
 from Game import Game
 from geometry import Vector2D, Point2D, Bounds
-# from Projectile import Launcher
+from Projectile import Launcher
 from time import sleep
 # from random import choice
-from Agent import controllable
+from Agent import Controllable
 
 class KarlGame(Game):
 
@@ -49,7 +49,21 @@ class KarlGame(Game):
     def update(self):
         self.character.update()
         self.canvas.delete('agent')
-        self.draw_poly(self.character.shape(),self.character.color(),'agent')
+        full_points = self.character.shape()
+        self.drawagent([full_points[0],full_points[2]],self.character.color())
+
+        for gun in self.cannons:
+            gun.update()
+        self.canvas.delete('guns')
+        for gun in self.cannons:
+            self.draw_poly(gun.shape(),gun.color(),'guns')
+
+        for missile in self.bullets:
+            missile.update()
+        self.canvas.delete('bullets')
+        for missile in self.bullets:
+            self.draw_poly(missile.shape(),missile.color(),'bullets')
+
         Frame.update(self)
 
     def keypress(self,event):
@@ -76,12 +90,12 @@ class KarlGame(Game):
         if event.keysym == 'Right':
             self.character.change_direction(False,self.character.RIGHT_VECTOR)
 
-    def twopointBox(self,topleft,botright):
-        p1 = topleft
-        p2 = Point2D(botright.x,topleft.y)
-        p3 = botright
-        p4 = Point2D(topleft.x,botright.y)
-        return [p1,p2,p3,p4]
+    # def twopointBox(self,topleft,botright):
+    #     p1 = topleft
+    #     p2 = Point2D(botright.x,topleft.y)
+    #     p3 = botright
+    #     p4 = Point2D(topleft.x,botright.y)
+    #     return [p1,p2,p3,p4]
 
     def makeWalls(self):
         ww = self.WINDOW_WIDTH
@@ -120,22 +134,21 @@ class KarlGame(Game):
 
         self.makeWalls()
 
-        self.character = controllable(Point2D(),0.6,self)
+        self.character = Controllable(Point2D(),1.0,self)
 
-        self.canvas.xview_moveto(0.0)
-        self.canvas.yview_moveto(0.0)
+        for i in range(-15,30,15):
+            self.cannons.append(Launcher(Point2D(float(i),self.wallbounds.ymin),Vector2D(0.0,1.0),self))
+            self.cannons.append(Launcher(Point2D(float(i),self.wallbounds.ymax),Vector2D(0.0,-1.0),self))
+        for k in range(3):
+            kr = (k-1)*11.25
+            self.cannons.append(Launcher(Point2D(self.wallbounds.xmin,float(kr)),Vector2D(1.0,0.0),self))
+            self.cannons.append(Launcher(Point2D(self.wallbounds.xmax,float(kr)),Vector2D(-1.0,0.0),self))
 
+            
         while True:
             sleep(1.0/60.0)
             self.update()
 
-        # for i in range(-15,30,15):
-        #     self.cannons.append(Launcher(Point2D(float(i),self.wallbounds.ymin),Vector2D(0.0,1.0),self))
-        #     self.cannons.append(Launcher(Point2D(float(i),self.wallbounds.ymax),Vector2D(0.0,-1.0),self))
-        # for k in range(3):
-        #     kr = (k-1)*11.25
-        #     self.cannons.append(Launcher(Point2D(self.wallbounds.xmin,float(kr)),Vector2D(1.0,0.0),self))
-        #     self.cannons.append(Launcher(Point2D(self.wallbounds.xmax,float(kr)),Vector2D(-1.0,0.0),self))
         
 
         # self.update()

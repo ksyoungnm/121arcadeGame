@@ -14,15 +14,15 @@ class Agent:
 
     def shape(self):
         upperright = self.position + Vector2D(1,1)
-        lowerright = self.position + Vector2D(-1,1)
+        lowerright = self.position + Vector2D(1,-1)
         lowerleft = self.position + Vector2D(-1,-1)
-        upperleft = self.position + Vector2D(1,-1)
+        upperleft = self.position + Vector2D(-1,1)
         return [upperright,lowerright,lowerleft,upperleft]
 
     def update(self):
         pass
 
-class controllable(Agent):
+class Controllable(Agent):
 
     MAX_SPEED = 0.5
 
@@ -38,9 +38,9 @@ class controllable(Agent):
 
     def shape(self):
         upperright = self.position + Vector2D(self.size/2,self.size/2)
-        lowerright = self.position + Vector2D(-self.size/2,self.size/2)
+        lowerright = self.position + Vector2D(self.size/2,-self.size/2)
         lowerleft = self.position + Vector2D(-self.size/2,-self.size/2)
-        upperleft = self.position + Vector2D(self.size/2,-self.size/2)
+        upperleft = self.position + Vector2D(-self.size/2,self.size/2)
         return [upperright,lowerright,lowerleft,upperleft]
 
     def change_direction(self,movestop,direction):
