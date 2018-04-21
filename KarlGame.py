@@ -1,3 +1,4 @@
+from tkinter import font
 from tkinter import *
 from Game import Game
 from geometry import Vector2D, Point2D, Bounds
@@ -26,6 +27,8 @@ class KarlGame(Game):
         self.highscore = IntVar()
 
         self.overFrame = Frame(self,bg='purple')
+        self.typefont = font.Font(family='American Typewriter')
+        # self.scoreLabel = self.canvas.create_text(700,60,text='hello',fill='white',font=self.typefont)
 
         self.startLabel = Label(self.overFrame,text='Hello!',bg='purple',fg='white')
         self.startButton = Label(self.overFrame,text='Play Game',background='purple',foreground='white')
@@ -55,7 +58,7 @@ class KarlGame(Game):
         self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame,tags='menu')
         self.restartLabel.grid(row=0)
         self.restartButton.configure(background='purple',fg='white')
-        self.restartButton.grid(row=1)
+        self.restartButton.grid(row=1,sticky='e'+'w')
         self.overFrame.focus_set()
 
     def enterExit(self,event):
@@ -157,6 +160,7 @@ class KarlGame(Game):
 
         self.canvas.delete('all')
         self.canvas.create_rectangle((0,0),(self.WINDOW_WIDTH+1,self.WINDOW_HEIGHT+1),fill='#000000',tags='backdrop')
+        self.scoreLabel = self.canvas.create_text(750,45,text='Score: ',fill='white',font=self.typefont,anchor='ne')
 
         self.makeWalls()
 
@@ -171,25 +175,29 @@ class KarlGame(Game):
             self.cannons.append(Launcher(Point2D(self.wallbounds.xmax,float(kr)),Vector2D(-1.0,0.0),self))
 
 
+        counter = 0
         while not self.gameover:
-            if self.score.get() % 10 == 5:
+            score = self.score.get()
+            self.canvas.itemconfigure(self.scoreLabel,text='Score: '+str(score))
+            if counter % 10 == 5:
                 choice(self.cannons).fire()
-            self.score.set(self.score.get()+1)
+            self.score.set(counter)
+            counter += 1
             sleep(1.0/60.0)
             self.update()
 
-        score = self.score.get()
-        highscore = self.highscore.get()
+        # score = self.score.get()
+        # highscore = self.highscore.get()
 
-        if score > highscore:
-            self.highscore.set(score)
-            print('-----------------------------')
-            print('Congrats! New Highscore! Wow!')
-        else:
-            print('-----------------------------')
-        print('Highscore: '+str(self.highscore.get()))
-        print('Your score: '+str(score))
-        print('-----------------------------')
+        # if score > highscore:
+        #     self.highscore.set(score)
+        #     print('-----------------------------')
+        #     print('Congrats! New Highscore! Wow!')
+        # else:
+        #     print('-----------------------------')
+        # print('Highscore: '+str(self.highscore.get()))
+        # print('Your score: '+str(score))
+        # print('-----------------------------')
 
 
         self.restartMenu()
