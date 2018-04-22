@@ -23,42 +23,54 @@ class KarlGame(Game):
         
         self.gameover = False
         self.pause = False
-        self.score = IntVar()
-        self.highscore = IntVar()
 
-        self.overFrame = Frame(self,bg='purple')
+        self.highscore = 0
+
+        self.overFrame = Frame(self,bg='purple',highlightcolor='white',highlightthickness=0)
         self.typefont = font.Font(family='American Typewriter')
-        # self.scoreLabel = self.canvas.create_text(700,60,text='hello',fill='white',font=self.typefont)
 
         self.startLabel = Label(self.overFrame,text='Hello!',bg='purple',fg='white')
-        self.startButton = Label(self.overFrame,text='Play Game',background='purple',foreground='white')
+        self.startButton = Label(self.overFrame,text='Play Game',bg='purple',fg='white',highlightthickness=2,highlightcolor='white')
         self.startButton.bind('<Enter>',self.enterExit)
         self.startButton.bind('<Leave>',self.enterExit)
         self.startButton.bind('<Button-1>',self.startGame)
 
-        self.restartLabel = Label(self.overFrame,text='Game Over!',bg='purple',fg='white')
-        self.restartButton = Label(self.overFrame,text='Restart',background='purple',foreground='white')
+        self.restartLabel = Label(self.overFrame,text='Game Over!',bg='black',fg='white')
+        self.restartButton = Label(self.overFrame,text='Play Again',bg='black',fg='white',highlightthickness=2,highlightcolor='white')
         self.restartButton.bind('<Enter>',self.enterExit)
         self.restartButton.bind('<Leave>',self.enterExit)
         self.restartButton.bind('<Button-1>',self.startGame)
+        self.remenuButton = Label(self.overFrame,text='Main Menu',bg='black',fg='white',highlightthickness=2,highlightcolor='white')
+        self.remenuButton.bind('<Enter>',self.enterExit)
+        self.remenuButton.bind('<Leave>',self.enterExit)
+        self.remenuButton.bind('<Button-1>',self.startMenu)
 
-        self.startMenu()
+        self.startMenu(None)
 
         self.root.mainloop()
 
-    def startMenu(self):
+    def startMenu(self,event):
+        for widget in self.overFrame.winfo_children():
+            widget.grid_forget()
+        self.overFrame.configure(bg='purple')
+        self.canvas.delete('all')
         self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame,tags='menu')
-        self.startLabel.grid(row=0)
-        self.startButton.grid(row=1)
+        self.startButton.configure(bg='purple',fg='white')
+        self.startLabel.grid(row=0,pady=4,sticky='ew')
+        self.startButton.grid(row=1,pady=1,sticky='ew')
         self.overFrame.focus_set()
+        Frame.update(self)
 
     def restartMenu(self):
         for widget in self.overFrame.winfo_children():
             widget.grid_forget()
+        self.overFrame.configure(bg='black')
         self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame,tags='menu')
-        self.restartLabel.grid(row=0)
-        self.restartButton.configure(background='purple',fg='white')
-        self.restartButton.grid(row=1,sticky='e'+'w')
+        self.restartButton.configure(bg='black',fg='white')
+        self.remenuButton.configure(bg='black',fg='white')
+        self.restartLabel.grid(row=0,pady=4)
+        self.restartButton.grid(row=1,pady=1,sticky='ew')
+        self.remenuButton.grid(row=2,pady=1,sticky='ew')
         self.overFrame.focus_set()
 
     def enterExit(self,event):
@@ -117,13 +129,6 @@ class KarlGame(Game):
         if event.keysym == 'Right':
             self.character.change_direction(False,self.character.RIGHT_VECTOR)
 
-    # def twopointBox(self,topleft,botright):
-    #     p1 = topleft
-    #     p2 = Point2D(botright.x,topleft.y)
-    #     p3 = botright
-    #     p4 = Point2D(topleft.x,botright.y)
-    #     return [p1,p2,p3,p4]
-
     def makeWalls(self):
         ww = self.WINDOW_WIDTH
         wh = self.WINDOW_HEIGHT
@@ -139,15 +144,6 @@ class KarlGame(Game):
         self.walls.append(self.canvas.create_rectangle(w3, fill='#FFFFFF',width=0,tags='wall'))
         self.walls.append(self.canvas.create_rectangle(w4, fill='#FFFFFF',width=0,tags='wall'))
 
-    # def gameoverscreen(self):
-    #     self.overFrame = Frame(self.root)
-    #     Label(self.overFrame,text='GAME OVER',background='green').grid(row=0)
-    #     Button(self.overFrame,text='restart',command=self.newstart).grid(row=1)
-        
-    #     self.canvas.create_window(self.WINDOW_WIDTH//2,self.WINDOW_HEIGHT//2,window=self.overFrame)
-        
-    #     self.root.mainloop()
-
     def startGame(self,event):
 
         self.gameover = False
@@ -156,11 +152,11 @@ class KarlGame(Game):
         self.bullets = []
         self.walls = []
 
-        self.score.set(0)
-
         self.canvas.delete('all')
         self.canvas.create_rectangle((0,0),(self.WINDOW_WIDTH+1,self.WINDOW_HEIGHT+1),fill='#000000',tags='backdrop')
-        self.scoreLabel = self.canvas.create_text(750,45,text='Score: ',fill='white',font=self.typefont,anchor='ne')
+
+        self.scoreLabel = self.canvas.create_text(750,45,text='Score: 0',fill='white',font=self.typefont,anchor='ne')
+        self.highscoreLabel = self.canvas.create_text(750,60,text='Highscore: '+str(self.highscore),fill='white',font=self.typefont,anchor='ne')
 
         self.makeWalls()
 
@@ -176,48 +172,25 @@ class KarlGame(Game):
 
 
         counter = 0
+        score = 0
+        highscore = self.highscore
+
         while not self.gameover:
-            score = self.score.get()
-            self.canvas.itemconfigure(self.scoreLabel,text='Score: '+str(score))
             if counter % 10 == 5:
                 choice(self.cannons).fire()
-            self.score.set(counter)
+            self.canvas.itemconfigure(self.scoreLabel,text='Score: '+str(score))
+            if score > highscore:
+                highscore = score
+                self.canvas.itemconfigure(self.highscoreLabel,text='Highscore: '+str(highscore))
             counter += 1
+            score += 1
             sleep(1.0/60.0)
             self.update()
 
-        # score = self.score.get()
-        # highscore = self.highscore.get()
-
-        # if score > highscore:
-        #     self.highscore.set(score)
-        #     print('-----------------------------')
-        #     print('Congrats! New Highscore! Wow!')
-        # else:
-        #     print('-----------------------------')
-        # print('Highscore: '+str(self.highscore.get()))
-        # print('Your score: '+str(score))
-        # print('-----------------------------')
-
+        self.highscore = highscore
 
         self.restartMenu()
         Frame.update(self)
         self.root.mainloop()
-
-
-
-        
-
-        # self.update()
-        # sleep(1.0)
-        # counter = 0
-        # while not self.gameover:
-        #     if counter == 10:
-        #         choice(self.cannons).fire()
-        #         counter = 0
-        #     sleep(1.0/60.0)
-        #     self.update()
-        #     counter += 1
-        # self.gameoverscreen()
 
 game = KarlGame()
