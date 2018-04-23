@@ -25,25 +25,71 @@ class KarlGame(Game):
         self.pause = False
 
         self.highscore = 0
+        self.lifetimeDeaths = 0
+        self.lifetimeCoins = 0
+        self.lifetimeShields = 0
+        self.lifetimeGuns = 0
 
-        self.overFrame = Frame(self,bg='#690087',highlightcolor='white',highlightthickness=0)
+        self.overFrame = Frame(self,
+            bg='#690087',highlightcolor='white',highlightthickness=0
+            )
         self.typefont = font.Font(family='American Typewriter')
+        self.boldfont = font.Font(weight='bold')
+        self.gameFont = font.Font(family='Copperplate',slant='italic',size=28)
+        self.authorFont = font.Font(family='Courier New',slant='italic',size=14)
+        self.welcomefont = font.Font(family='Courier New')
 
-        self.startLabel = Label(self.overFrame,text='Hello!',bg='#690087',fg='white')
+        self.startLabel = Label(self.overFrame,
+            text='Welcome To',bg='#690087',fg='white',
+            font=self.authorFont
+            )
+        self.gameLabel = Label(self.overFrame,
+            text='Dodger',bg='#690087',fg='white',
+            font=self.gameFont
+            )
+        self.authorLabel = Label(self.overFrame,
+            text='by Karl Young\n\n',bg='#690087',fg='white',
+            font=self.authorFont
+            )
 
-        self.controlsLabel = Label(self.overFrame,text='up:up\ndown:down\nleft:left\nright:right',bg='purple',fg='white')
+        self.controlsLabel = Label(self.overFrame,
+            text='Move Up: Up (arrow key)\nMove Down: Down (arrow key)\nMove Left: Left (arrow key)\nMove Right: Right (arrow key)',
+            bg='purple',fg='white'
+            )
 
-        self.statsLabel = Label(self.overFrame,text='highscore:\ndeaths:\ncoins collected:\nshields broken:\nguns destroyed:',bg='#5230ff',fg='white')
+        self.statsLabel = Label(self.overFrame,
+            text='Highscore: '+str(self.highscore),
+            bg='#5230ff',fg='white'
+            )
+        self.statsLabel2 = Label(self.overFrame,
+            text='\n\n\nLifetime',
+            bg='#5230ff',fg='white',
+            font=self.boldfont
+            )
+        self.statsLabel3 = Label(self.overFrame,
+            text=
+            'Deaths: '+str(self.lifetimeDeaths)+
+            '\n\nCoins Collected: '+str(self.lifetimeCoins)+
+            '\nShields Broken: '+str(self.lifetimeShields)+
+            '\nGuns Destroyed: '+str(self.lifetimeGuns),
+            bg='#5230ff',fg='white'
+            )
 
         self.restartLabel = Label(self.overFrame,text='Game Over!',bg='black',fg='white')
 
 
-        self.startButton = Label(self.overFrame,text='Play Game',bg='#690087',fg='white',highlightthickness=2,highlightcolor='white')
+        self.startButton = Label(self.overFrame,text='Play Game',
+            bg='#690087',fg='white',
+            highlightthickness=2,highlightcolor='white'
+            )
         self.startButton.bind('<Enter>',self.enterExit)
         self.startButton.bind('<Leave>',self.enterExit)
         self.startButton.bind('<Button-1>',self.startGame)
 
-        self.controlsButton = Label(self.overFrame,text='Controls',bg='#690087',fg='white',highlightthickness=2,highlightcolor='white')
+        self.controlsButton = Label(self.overFrame,text='Controls',
+            bg='#690087',fg='white',
+            highlightthickness=2,highlightcolor='white'
+            )
         self.controlsButton.bind('<Enter>',self.enterExit)
         self.controlsButton.bind('<Leave>',self.enterExit)
         self.controlsButton.bind('<Button-1>',self.controlMenu)
@@ -81,10 +127,12 @@ class KarlGame(Game):
         self.controlsButton.configure(bg='#690087',fg='white')
         self.statsButton.configure(bg='#690087',fg='white')
 
-        self.startLabel.grid(row=0,pady=4,sticky='ew')
-        self.startButton.grid(row=1,pady=1,sticky='ew')
-        self.controlsButton.grid(row=2,pady=1,sticky='ew')
-        self.statsButton.grid(row=3,pady=1,sticky='ew')
+        self.startLabel.grid(row=0,pady=0,sticky='ew')
+        self.gameLabel.grid(row=1,pady=0,sticky='ew')
+        self.authorLabel.grid(row=2,pady=0,sticky='ew')
+        self.startButton.grid(row=3,pady=1,sticky='ew')
+        self.controlsButton.grid(row=4,pady=1,sticky='ew')
+        self.statsButton.grid(row=5,pady=1,sticky='ew')
 
         self.overFrame.focus_set()
         Frame.update(self)
@@ -117,10 +165,21 @@ class KarlGame(Game):
         
         self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame,tags='menu')
 
+        self.statsLabel.configure(text='Highscore: '+str(self.highscore))
+        self.statsLabel3.configure(
+            text=
+            'Deaths: '+str(self.lifetimeDeaths)+
+            '\n\nCoins Collected: '+str(self.lifetimeCoins)+
+            '\nShields Broken: '+str(self.lifetimeShields)+
+            '\nGuns Destroyed: '+str(self.lifetimeGuns)
+            )
         self.remenuButton.configure(bg='#5230ff',fg='white')
 
-        self.statsLabel.grid(row=0,pady=4,sticky='ew')
-        self.remenuButton.grid(row=1,pady=1,sticky='ew')
+
+        self.statsLabel.grid(row=0,sticky='ew')
+        self.statsLabel2.grid(row=1,sticky='ew')
+        self.statsLabel3.grid(row=2,sticky='ew')
+        self.remenuButton.grid(row=3,pady=4,sticky='ew')
         
         self.overFrame.focus_set()
         Frame.update(self)
@@ -258,6 +317,7 @@ class KarlGame(Game):
             self.update()
 
         self.highscore = highscore
+        self.lifetimeDeaths += 1
 
         self.restartMenu()
         self.root.mainloop()
