@@ -15,6 +15,7 @@ class KarlGame(Game):
 
         self.wallwidth = 3.0
         self.wallbounds = self.bounds.scale_in(self.wallwidth)
+        self.buttonList = []
 
         self.character = None
         self.cannons = []
@@ -31,8 +32,20 @@ class KarlGame(Game):
         self.lifetimeGuns = 0
 
         self.overFrame = Frame(self,
-            bg='#690087',highlightcolor='white',highlightthickness=0
+            bg='#690087',
+            highlightcolor='white',
+            highlightthickness=0
             )
+
+        self.makeLabels()
+        self.makeButtons()
+
+        self.startMenu(None)
+
+        self.root.mainloop()
+
+    def makeLabels(self):
+
         self.typefont = font.Font(family='American Typewriter')
         self.boldfont = font.Font(weight='bold')
         self.gameFont = font.Font(family='Copperplate',slant='italic',size=28)
@@ -51,12 +64,13 @@ class KarlGame(Game):
             text='by Karl Young\n\n',bg='#690087',fg='white',
             font=self.authorFont
             )
-
         self.controlsLabel = Label(self.overFrame,
-            text='Move Up: Up (arrow key)\nMove Down: Down (arrow key)\nMove Left: Left (arrow key)\nMove Right: Right (arrow key)',
+            text='Move Up: Up (arrow key)\n'+
+            'Move Down: Down (arrow key)\n'+
+            'Move Left: Left (arrow key)\n'+
+            'Move Right: Right (arrow key)',
             bg='purple',fg='white'
             )
-
         self.statsLabel = Label(self.overFrame,
             text='Highscore: '+str(self.highscore),
             bg='#5230ff',fg='white'
@@ -67,51 +81,56 @@ class KarlGame(Game):
             font=self.boldfont
             )
         self.statsLabel3 = Label(self.overFrame,
-            text=
-            'Deaths: '+str(self.lifetimeDeaths)+
+            text='Deaths: '+str(self.lifetimeDeaths)+
             '\n\nCoins Collected: '+str(self.lifetimeCoins)+
             '\nShields Broken: '+str(self.lifetimeShields)+
             '\nGuns Destroyed: '+str(self.lifetimeGuns),
             bg='#5230ff',fg='white'
             )
+        self.restartLabel = Label(self.overFrame,
+            text='Game Over!',bg='black',fg='white'
+            )
 
-        self.restartLabel = Label(self.overFrame,text='Game Over!',bg='black',fg='white')
+    def makeButtons(self):
 
-
-        self.startButton = Label(self.overFrame,text='Play Game',
-            bg='#690087',fg='white',
+        self.startButton = Label(self.overFrame,
+            text='Play Game', bg='#690087',fg='white',
             highlightthickness=2,highlightcolor='white'
             )
-        self.startButton.bind('<Enter>',self.enterExit)
-        self.startButton.bind('<Leave>',self.enterExit)
         self.startButton.bind('<Button-1>',self.startGame)
+        self.buttonList.append(self.startButton)
 
-        self.controlsButton = Label(self.overFrame,text='Controls',
-            bg='#690087',fg='white',
+        self.controlsButton = Label(self.overFrame,
+            text='Controls',bg='#690087',fg='white',
             highlightthickness=2,highlightcolor='white'
             )
-        self.controlsButton.bind('<Enter>',self.enterExit)
-        self.controlsButton.bind('<Leave>',self.enterExit)
         self.controlsButton.bind('<Button-1>',self.controlMenu)
+        self.buttonList.append(self.controlsButton)
 
-        self.statsButton = Label(self.overFrame,text='Stats',bg='#690087',fg='white',highlightthickness=2,highlightcolor='white')
-        self.statsButton.bind('<Enter>',self.enterExit)
-        self.statsButton.bind('<Leave>',self.enterExit)
+        self.statsButton = Label(self.overFrame,
+            text='Stats',bg='#690087',fg='white',
+            highlightthickness=2,highlightcolor='white'
+            )
         self.statsButton.bind('<Button-1>',self.statsMenu)
-
-        self.restartButton = Label(self.overFrame,text='Play Again',bg='black',fg='white',highlightthickness=2,highlightcolor='white')
-        self.restartButton.bind('<Enter>',self.enterExit)
-        self.restartButton.bind('<Leave>',self.enterExit)
+        self.buttonList.append(self.statsButton)
+        
+        self.restartButton = Label(self.overFrame,
+            text='Play Again',bg='black',fg='white',
+            highlightthickness=2,highlightcolor='white'
+            )
         self.restartButton.bind('<Button-1>',self.startGame)
+        self.buttonList.append(self.restartButton)
 
-        self.remenuButton = Label(self.overFrame,text='Main Menu',bg='black',fg='white',highlightthickness=2,highlightcolor='white')
-        self.remenuButton.bind('<Enter>',self.enterExit)
-        self.remenuButton.bind('<Leave>',self.enterExit)
+        self.remenuButton = Label(self.overFrame,
+            text='Main Menu',bg='black',fg='white',
+            highlightthickness=2,highlightcolor='white'
+            )
         self.remenuButton.bind('<Button-1>',self.startMenu)
+        self.buttonList.append(self.remenuButton)
 
-        self.startMenu(None)
-
-        self.root.mainloop()
+        for button in self.buttonList:
+            button.bind('<Enter>',self.enterExit)
+            button.bind('<Leave>',self.enterExit)
 
     def startMenu(self,event):
         self.canvas.delete('all')
@@ -202,6 +221,8 @@ class KarlGame(Game):
         self.overFrame.focus_set()
         Frame.update(self)
 
+    def pauseMenu(self):
+
     def enterExit(self,event):
         e = event.widget
         bg = e.cget('background')
@@ -244,7 +265,7 @@ class KarlGame(Game):
         if event.keysym == 'Right':
             self.character.change_direction(True,self.character.RIGHT_VECTOR)
         if event.keysym == 'Escape':
-            self.pause = True
+            self.pauseMenu()
         if event.char == 'q':
             self.gameover = True
 
