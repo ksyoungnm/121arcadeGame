@@ -68,10 +68,11 @@ class KarlGame(Game):
             font=self.authorFont
             )
         self.controlsLabel = Label(self.overFrame,
-            text='Move Up: Up (arrow key)\n'+
-            'Move Down: Down (arrow key)\n'+
-            'Move Left: Left (arrow key)\n'+
-            'Move Right: Right (arrow key)',
+            text='Move Up: '+'\u2191'+'\n'+
+            'Move Down: '+'\u2193'+'\n'+
+            'Move Left: '+'\u2190'+'\n'+
+            'Move Right: '+'\u2192'+'\n\n'+
+            "Pause: Space or 'Esc'",
             bg='purple',fg='white'
             )
         self.statsLabel = Label(self.overFrame,
@@ -92,6 +93,10 @@ class KarlGame(Game):
             )
         self.restartLabel = Label(self.overFrame,
             text='Game Over!',bg='black',fg='white'
+            )
+        self.quitLabel = Label(self.overFrame,
+            text='Are you sure?\nAll data will be lost.',
+            bg='black',fg='white'
             )
 
     def makeButtons(self):
@@ -135,7 +140,7 @@ class KarlGame(Game):
             text='Quit',bg='black',fg='white',
             highlightthickness=2,highlightcolor='white'
             )
-        self.quitButton.bind('<Button-1>',self.quit)
+        self.quitButton.bind('<Button-1>',self.quitMenu)
         self.buttonList.append(self.quitButton)
 
         self.confirmButton = Label(self.overFrame,
@@ -149,8 +154,8 @@ class KarlGame(Game):
             text='No',bg='black',fg='white',
             highlightthickness=2,highlightcolor='white'
             )
-        self.returnButton.bind('<Button-1>',self.quit)
-        self.buttonList.append(self.quitButton)
+        self.returnButton.bind('<Button-1>',self.startMenu)
+        self.buttonList.append(self.returnButton)
 
         for button in self.buttonList:
             button.bind('<Enter>',self.enterExit)
@@ -160,11 +165,24 @@ class KarlGame(Game):
         self.canvas.delete('menu')
         for widget in self.overFrame.winfo_children():
             widget.grid_forget()
+
+        canvasbg = self.canvas.cget('background')
+
         self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame,tags='menu')
 
-        self.
+        self.quitLabel.configure(bg=canvasbg)
+        self.confirmButton.configure(bg=canvasbg,fg='white')
+        self.returnButton.configure(bg=canvasbg,fg='white')
 
-    def quit(self):
+        self.quitLabel.grid(row=0,column=0,columnspan=2,sticky='ew')
+        self.confirmButton.grid(row=1,column=0,padx=0.5,sticky='ew')
+        self.returnButton.grid(row=1,column=1,padx=0.5,sticky='ew')
+
+        self.overFrame.focus_set()
+        Frame.update(self)
+
+    def quit(self,event):
+        self.root.destroy()
 
     def startMenu(self,event):
         self.canvas.delete('all')
@@ -262,7 +280,7 @@ class KarlGame(Game):
         if self.gameover:
             return
         if self.pause:
-            self.canvas.create_text(400,300,text="PAUSE\nPress 'Esc' to resume.",fill='white',justify='center',tags='pause')
+            self.canvas.create_text(400,300,text="PAUSE\nPress "+event.keysym.capitalize()+" to resume.",fill='white',justify='center',tags='pause')
             self.root.mainloop()
         else:
             self.canvas.delete('pause')
@@ -302,29 +320,9 @@ class KarlGame(Game):
 
     def keypress(self,event):
         pass
-    #     if event.keysym == 'Up':
-    #         self.character.change_direction(True,self.character.UP_VECTOR)
-    #     if event.keysym == 'Down':
-    #         self.character.change_direction(True,self.character.DOWN_VECTOR)
-    #     if event.keysym == 'Left':
-    #         self.character.change_direction(True,self.character.LEFT_VECTOR)
-    #     if event.keysym == 'Right':
-    #         self.character.change_direction(True,self.character.RIGHT_VECTOR)
-    #     if event.keysym == 'Escape':
-    #         self.pauseMenu()
-    #     if event.char == 'q':
-    #         self.gameover = True
 
     def keyrelease(self,event):
         pass
-    #     if event.keysym == 'Up':
-    #         self.character.change_direction(False,self.character.UP_VECTOR)
-    #     if event.keysym == 'Down':
-    #         self.character.change_direction(False,self.character.DOWN_VECTOR)
-    #     if event.keysym == 'Left':
-    #         self.character.change_direction(False,self.character.LEFT_VECTOR)
-    #     if event.keysym == 'Right':
-    #         self.character.change_direction(False,self.character.RIGHT_VECTOR)
 
     def makeWalls(self):
         ww = self.WINDOW_WIDTH
@@ -356,6 +354,7 @@ class KarlGame(Game):
         self.highscoreLabel = self.canvas.create_text(750,60,text='Highscore: '+str(self.highscore),fill='white',font=self.typefont,anchor='ne')
 
         self.bind_all('<KeyPress-Escape>',self.pauseMenu)
+        self.bind_all('<KeyPress- >',self.pauseMenu)
 
         self.makeWalls()
 
