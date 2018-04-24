@@ -33,6 +33,14 @@ class Controllable(Agent):
 
     def __init__(self,position,size,world):
         super().__init__(position,world)
+        self.world.bind_all('<Key-Up>',self.moveUp)
+        self.world.bind_all('<KeyRelease-Up>',self.stopUp)
+        self.world.bind_all('<Key-Down>',self.moveDown)
+        self.world.bind_all('<KeyRelease-Down>',self.stopDown)
+        self.world.bind_all('<Key-Left>',self.moveLeft)
+        self.world.bind_all('<KeyRelease-Left>',self.stopLeft)
+        self.world.bind_all('<Key-Right>',self.moveRight)
+        self.world.bind_all('<KeyRelease-Right>',self.stopRight)
         self.size = size
         self.hit_radius = 0.4
 
@@ -42,6 +50,23 @@ class Controllable(Agent):
         lowerleft = self.position + Vector2D(-self.size/2,-self.size/2)
         upperleft = self.position + Vector2D(-self.size/2,self.size/2)
         return [upperright,lowerright,lowerleft,upperleft]
+
+    def moveUp(self,event):
+        self.change_direction(True,self.UP_VECTOR)
+    def stopUp(self,event):
+        self.change_direction(False,self.UP_VECTOR)
+    def moveDown(self,event):
+        self.change_direction(True,self.DOWN_VECTOR)
+    def stopDown(self,event):
+        self.change_direction(False,self.DOWN_VECTOR)
+    def moveLeft(self,event):
+        self.change_direction(True,self.LEFT_VECTOR)
+    def stopLeft(self,event):
+        self.change_direction(False,self.LEFT_VECTOR)
+    def moveRight(self,event):
+        self.change_direction(True,self.RIGHT_VECTOR)
+    def stopRight(self,event):
+        self.change_direction(False,self.RIGHT_VECTOR)
 
     def change_direction(self,movestop,direction):
         if movestop:

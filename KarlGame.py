@@ -31,6 +31,9 @@ class KarlGame(Game):
         self.lifetimeShields = 0
         self.lifetimeGuns = 0
 
+        self.bind_all('<KeyPress>',self.keypress)
+        self.bind_all('<KeyRelease>',self.keyrelease)
+
         self.overFrame = Frame(self,
             bg='#690087',
             highlightcolor='white',
@@ -128,9 +131,40 @@ class KarlGame(Game):
         self.remenuButton.bind('<Button-1>',self.startMenu)
         self.buttonList.append(self.remenuButton)
 
+        self.quitButton = Label(self.overFrame,
+            text='Quit',bg='black',fg='white',
+            highlightthickness=2,highlightcolor='white'
+            )
+        self.quitButton.bind('<Button-1>',self.quit)
+        self.buttonList.append(self.quitButton)
+
+        self.confirmButton = Label(self.overFrame,
+            text='Yes',bg='black',fg='white',
+            highlightthickness=2,highlightcolor='white'
+            )
+        self.confirmButton.bind('<Button-1>',self.quit)
+        self.buttonList.append(self.confirmButton)
+
+        self.returnButton = Label(self.overFrame,
+            text='No',bg='black',fg='white',
+            highlightthickness=2,highlightcolor='white'
+            )
+        self.returnButton.bind('<Button-1>',self.quit)
+        self.buttonList.append(self.quitButton)
+
         for button in self.buttonList:
             button.bind('<Enter>',self.enterExit)
             button.bind('<Leave>',self.enterExit)
+
+    def quitMenu(self,event):
+        self.canvas.delete('menu')
+        for widget in self.overFrame.winfo_children():
+            widget.grid_forget()
+        self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame,tags='menu')
+
+        self.
+
+    def quit(self):
 
     def startMenu(self,event):
         self.canvas.delete('all')
@@ -145,6 +179,7 @@ class KarlGame(Game):
         self.startButton.configure(bg='#690087',fg='white')
         self.controlsButton.configure(bg='#690087',fg='white')
         self.statsButton.configure(bg='#690087',fg='white')
+        self.quitButton.configure(bg='#690087',fg='white')
 
         self.startLabel.grid(row=0,pady=0,sticky='ew')
         self.gameLabel.grid(row=1,pady=0,sticky='ew')
@@ -152,6 +187,7 @@ class KarlGame(Game):
         self.startButton.grid(row=3,pady=1,sticky='ew')
         self.controlsButton.grid(row=4,pady=1,sticky='ew')
         self.statsButton.grid(row=5,pady=1,sticky='ew')
+        self.quitButton.grid(row=6,pady=1,sticky='ew')
 
         self.overFrame.focus_set()
         Frame.update(self)
@@ -209,19 +245,28 @@ class KarlGame(Game):
 
         self.overFrame.configure(bg='black')
 
+        self.canvas.create_text(400,262,text='Game Over!',fill='white')
         self.overFrameobj = self.canvas.create_window(self.WINDOW_WIDTH/2,self.WINDOW_HEIGHT/2,window = self.overFrame,tags='menu')
 
         self.restartButton.configure(bg='black',fg='white')
         self.remenuButton.configure(bg='black',fg='white')
 
-        self.restartLabel.grid(row=0,pady=4,sticky='ew')
         self.restartButton.grid(row=1,pady=1,sticky='ew')
         self.remenuButton.grid(row=2,pady=1,sticky='ew')
 
         self.overFrame.focus_set()
         Frame.update(self)
 
-    def pauseMenu(self):
+    def pauseMenu(self,event):
+        self.pause = not self.pause
+        if self.gameover:
+            return
+        if self.pause:
+            self.canvas.create_text(400,300,text="PAUSE\nPress 'Esc' to resume.",fill='white',justify='center',tags='pause')
+            self.root.mainloop()
+        else:
+            self.canvas.delete('pause')
+            self.runGame()
 
     def enterExit(self,event):
         e = event.widget
@@ -256,28 +301,30 @@ class KarlGame(Game):
         Frame.update(self)
 
     def keypress(self,event):
-        if event.keysym == 'Up':
-            self.character.change_direction(True,self.character.UP_VECTOR)
-        if event.keysym == 'Down':
-            self.character.change_direction(True,self.character.DOWN_VECTOR)
-        if event.keysym == 'Left':
-            self.character.change_direction(True,self.character.LEFT_VECTOR)
-        if event.keysym == 'Right':
-            self.character.change_direction(True,self.character.RIGHT_VECTOR)
-        if event.keysym == 'Escape':
-            self.pauseMenu()
-        if event.char == 'q':
-            self.gameover = True
+        pass
+    #     if event.keysym == 'Up':
+    #         self.character.change_direction(True,self.character.UP_VECTOR)
+    #     if event.keysym == 'Down':
+    #         self.character.change_direction(True,self.character.DOWN_VECTOR)
+    #     if event.keysym == 'Left':
+    #         self.character.change_direction(True,self.character.LEFT_VECTOR)
+    #     if event.keysym == 'Right':
+    #         self.character.change_direction(True,self.character.RIGHT_VECTOR)
+    #     if event.keysym == 'Escape':
+    #         self.pauseMenu()
+    #     if event.char == 'q':
+    #         self.gameover = True
 
     def keyrelease(self,event):
-        if event.keysym == 'Up':
-            self.character.change_direction(False,self.character.UP_VECTOR)
-        if event.keysym == 'Down':
-            self.character.change_direction(False,self.character.DOWN_VECTOR)
-        if event.keysym == 'Left':
-            self.character.change_direction(False,self.character.LEFT_VECTOR)
-        if event.keysym == 'Right':
-            self.character.change_direction(False,self.character.RIGHT_VECTOR)
+        pass
+    #     if event.keysym == 'Up':
+    #         self.character.change_direction(False,self.character.UP_VECTOR)
+    #     if event.keysym == 'Down':
+    #         self.character.change_direction(False,self.character.DOWN_VECTOR)
+    #     if event.keysym == 'Left':
+    #         self.character.change_direction(False,self.character.LEFT_VECTOR)
+    #     if event.keysym == 'Right':
+    #         self.character.change_direction(False,self.character.RIGHT_VECTOR)
 
     def makeWalls(self):
         ww = self.WINDOW_WIDTH
@@ -308,6 +355,8 @@ class KarlGame(Game):
         self.scoreLabel = self.canvas.create_text(750,45,text='Score: 0',fill='white',font=self.typefont,anchor='ne')
         self.highscoreLabel = self.canvas.create_text(750,60,text='Highscore: '+str(self.highscore),fill='white',font=self.typefont,anchor='ne')
 
+        self.bind_all('<KeyPress-Escape>',self.pauseMenu)
+
         self.makeWalls()
 
         self.character = Controllable(Point2D(),1.0,self)
@@ -321,24 +370,28 @@ class KarlGame(Game):
             self.cannons.append(Launcher(Point2D(self.wallbounds.xmax,float(kr)),Vector2D(-1.0,0.0),self))
 
 
-        counter = 0
-        score = 0
-        highscore = self.highscore
+        self.counter = 0
+        self.score = 0
+
+        self.runGame()
+
+    def runGame(self):
 
         while not self.gameover:
-            if counter % 10 == 5:
+            if self.counter % 10 == 5:
                 choice(self.cannons).fire()
-            self.canvas.itemconfigure(self.scoreLabel,text='Score: '+str(score))
-            if score > highscore:
-                highscore = score
-                self.canvas.itemconfigure(self.highscoreLabel,text='Highscore: '+str(highscore))
-            counter += 1
-            score += 1
+            self.canvas.itemconfigure(self.scoreLabel,text='Score: '+str(self.score))
+            if self.score > self.highscore:
+                self.highscore = self.score
+                self.canvas.itemconfigure(self.highscoreLabel,text='Highscore: '+str(self.highscore))
+            self.counter += 1
+            self.score += 1
             sleep(1.0/60.0)
             self.update()
 
-        self.highscore = highscore
         self.lifetimeDeaths += 1
+        self.bind_all('<KeyPress>',self.keypress)
+        self.bind_all('<KeyRelease>',self.keyrelease)
 
         self.restartMenu()
         self.root.mainloop()
