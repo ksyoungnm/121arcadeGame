@@ -7,12 +7,12 @@ Basic platform - 12pts
 Status - 4pts
 Prelude - 6pts
 Win/lose - 4pts
+Pause/resume - 4pts
 
-Total = 26pts.
+Total = 30pts.
 
 
 —To Do—
-1. Pause/resume - 4pts (30)
 2. Prizes - 2-4pts (33)
 2. Damaged mode - 3pts (36)
 3. Shields? - 3pts (39)
