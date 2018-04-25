@@ -71,6 +71,7 @@ class Controllable(Agent):
     def change_direction(self,movestop,direction):
         if movestop:
             self.velocity = self.velocity + direction * self.MAX_SPEED
+            self.velocity = self.velocity.D
         else:
             self.velocity = self.velocity - direction * self.MAX_SPEED
 

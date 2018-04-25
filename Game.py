@@ -28,15 +28,13 @@ class Game(Frame):
         self.canvas.xview_moveto(0.0)
         self.canvas.yview_moveto(0.0)
         
-        
-
-    # def trim(self,agent):
-    #     if self.topology == 'wrapped':
-    #         agent.position = self.bounds.wrap(agent.position)
-    #     elif self.topology == 'bound':
-    #         agent.position = self.bounds.clip(agent.position)
-    #     elif self.topology == 'open':
-    #         pass
+    def trim(self,agent):
+        if self.topology == 'wrapped':
+            agent.position = self.bounds.wrap(agent.position)
+        elif self.topology == 'bound':
+            agent.position = self.bounds.clip(agent.position)
+        elif self.topology == 'open':
+            pass
 
     def walltrim(self,agent):
         agent.position = self.wallbounds.hitboxtrim(agent.position,agent.size/2)
@@ -48,27 +46,8 @@ class Game(Frame):
         self.agents.remove(agent)
         self.bullets.remove(agent)
 
-    # def update(self):
-    #     for agent in self.agents:
-    #         agent.update()
-    #     self.clear()
-    #     for agent in self.agents:
-    #         if agent.shapekind == 'poly':
-    #             self.draw_poly(agent.shape(),agent.color())
-    #         elif agent.shapekind == 'oval':
-    #             self.draw_oval(agent.shape(),agent.color())
-    #     Frame.update(self)
-
-
-    # def worldToWall(self,blist):
-    #     wh,ww = self.WINDOW_HEIGHT,self.WINDOW_WIDTH
-    #     h = self.bounds.height()
-    #     x = self.bounds.xmin
-    #     y = self.bounds.ymin
-    #     ul = blist[0]
-    #     br = blist[1]
-    #     points = [ ((ul.x - x)*wh/h , wh - (ul.y - y)* wh/h) ] + [ (((br.x - x)*wh/h) + 1 , wh - ((br.y - y)* wh/h) + 1) ]
-    #     return points
+    def update(self):
+        pass
 
     def worldToPixel(self,shape):
         wh,ww = self.WINDOW_HEIGHT,self.WINDOW_WIDTH
@@ -93,10 +72,6 @@ class Game(Frame):
         first_point = points[0]
         points.append(first_point)
         return self.canvas.create_polygon(points, width=0, fill=color, smooth=1, tags=tags)
-
-    # def clear(self):
-    #     self.canvas.delete('all')
-    #     self.canvas.create_rectangle(0, 0, self.WINDOW_WIDTH, self.WINDOW_HEIGHT, fill="#000000")
 
     def keypress(self,event):
         pass

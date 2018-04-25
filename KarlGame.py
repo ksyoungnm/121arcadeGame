@@ -6,6 +6,7 @@ from Projectile import Launcher
 from time import sleep
 from random import choice
 from Agent import Controllable
+from Interactables import SpeedUp
 
 class KarlGame(Game):
 
@@ -21,6 +22,7 @@ class KarlGame(Game):
         self.cannons = []
         self.bullets = []
         self.walls = []
+        self.pickups = []
         
         self.gameover = False
         self.pause = False
@@ -34,11 +36,7 @@ class KarlGame(Game):
         self.bind_all('<KeyPress>',self.keypress)
         self.bind_all('<KeyRelease>',self.keyrelease)
 
-        self.overFrame = Frame(self,
-            bg='#690087',
-            highlightcolor='white',
-            highlightthickness=0
-            )
+        self.overFrame = Frame(self,bg='#690087',highlightcolor='white',highlightthickness=0)
 
         self.makeLabels()
         self.makeButtons()
@@ -311,11 +309,18 @@ class KarlGame(Game):
             self.draw_oval(missile.shape(),missile.color(),'bullets')
 
         b = self.worldToPixel([full_points[0],full_points[2]])
-        l = self.canvas.find_overlapping(b[0][0],b[0][1],b[1][0],b[1][1])
-        for thing in l:
-            if 'bullets' in self.canvas.gettags(thing):
+        overlapping = self.canvas.find_overlapping(b[0][0],b[0][1],b[1][0],b[1][1])
+        for thing in overlapping:
+            tags = self.canvas.gettags(thing)
+            if 'bullets' in tags:
                 self.gameover = True
                 return
+            elif 'Pickup' in tags:
+                for pick in self.pickups:
+                    if thing == pick.selfID:
+                        pick.effect()
+                        break
+
         Frame.update(self)
 
     def keypress(self,event):
@@ -339,27 +344,7 @@ class KarlGame(Game):
         self.walls.append(self.canvas.create_rectangle(w3, fill='#FFFFFF',width=0,tags='wall'))
         self.walls.append(self.canvas.create_rectangle(w4, fill='#FFFFFF',width=0,tags='wall'))
 
-    def startGame(self,event):
-
-        self.gameover = False
-        self.character = None
-        self.cannons = []
-        self.bullets = []
-        self.walls = []
-
-        self.canvas.delete('all')
-        self.canvas.create_rectangle((0,0),(self.WINDOW_WIDTH+1,self.WINDOW_HEIGHT+1),fill='#000000',tags='backdrop')
-
-        self.scoreLabel = self.canvas.create_text(750,45,text='Score: 0',fill='white',font=self.typefont,anchor='ne')
-        self.highscoreLabel = self.canvas.create_text(750,60,text='Highscore: '+str(self.highscore),fill='white',font=self.typefont,anchor='ne')
-
-        self.bind_all('<KeyPress-Escape>',self.pauseMenu)
-        self.bind_all('<KeyPress- >',self.pauseMenu)
-
-        self.makeWalls()
-
-        self.character = Controllable(Point2D(),1.0,self)
-
+    def makeGuns(self):
         for i in range(-20,40,20):
             self.cannons.append(Launcher(Point2D(float(i),self.wallbounds.ymin),Vector2D(0.0,1.0),self))
             self.cannons.append(Launcher(Point2D(float(i),self.wallbounds.ymax),Vector2D(0.0,-1.0),self))
@@ -368,6 +353,43 @@ class KarlGame(Game):
             self.cannons.append(Launcher(Point2D(self.wallbounds.xmin,float(kr)),Vector2D(1.0,0.0),self))
             self.cannons.append(Launcher(Point2D(self.wallbounds.xmax,float(kr)),Vector2D(-1.0,0.0),self))
 
+    def makeScoreLabel(self):
+        self.scoreLabel = self.canvas.create_text(
+            750,45,text='Score: 0',fill='white',
+            font=self.typefont,anchor='ne'
+            )
+        self.highscoreLabel = self.canvas.create_text(
+            750,60,text='Highscore: '+str(self.highscore),
+            fill='white',font=self.typefont,anchor='ne'
+            )
+
+    def makeBackdrop(self):
+        self.canvas.create_rectangle(
+            (0,0),(self.WINDOW_WIDTH+1,self.WINDOW_HEIGHT+1),
+            fill='#000000',tags='backdrop'
+            )
+
+    def startGame(self,event):
+
+        self.gameover = False
+        self.character = None
+        self.newHighscore = False
+        self.cannons = []
+        self.bullets = []
+        self.walls = []
+        self.pickups = []
+        self.canvas.delete('all')
+
+
+        self.makeBackdrop()
+        self.makeScoreLabel()
+        self.makeWalls()
+        self.makeGuns()
+
+        self.bind('<KeyPress-Escape>',self.pauseMenu)
+        self.bind('<KeyPress- >',self.pauseMenu)
+
+        self.character = Controllable(Point2D(),1.0,self)
 
         self.counter = 0
         self.score = 0
@@ -375,12 +397,14 @@ class KarlGame(Game):
         self.runGame()
 
     def runGame(self):
+        g=SpeedUp(Point2D(10,10),'green',self)
 
         while not self.gameover:
             if self.counter % 10 == 5:
                 choice(self.cannons).fire()
             self.canvas.itemconfigure(self.scoreLabel,text='Score: '+str(self.score))
             if self.score > self.highscore:
+                self.newHighscore = True
                 self.highscore = self.score
                 self.canvas.itemconfigure(self.highscoreLabel,text='Highscore: '+str(self.highscore))
             self.counter += 1
@@ -389,9 +413,13 @@ class KarlGame(Game):
             self.update()
 
         self.lifetimeDeaths += 1
+        
+        if self.newHighscore:
+            self.canvas.create_text(
+                400,225,text='New Highscore! Congrats!\nScore: '+str(self.highscore),fill='white',justify='center')
+
         self.bind_all('<KeyPress>',self.keypress)
         self.bind_all('<KeyRelease>',self.keyrelease)
-
         self.restartMenu()
         self.root.mainloop()
 
