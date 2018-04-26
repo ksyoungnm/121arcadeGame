@@ -26,6 +26,7 @@ class KarlGame(Game):
         
         self.gameover = False
         self.pause = False
+        self.speedTimer = 0
 
         self.highscore = 0
         self.lifetimeDeaths = 0
@@ -181,6 +182,10 @@ class KarlGame(Game):
 
     def quit(self,event):
         self.root.destroy()
+
+    def set_character_speed(self,amount,duration):
+        self.character.MAX_SPEED = amount
+        self.speedTimer = duration
 
     def startMenu(self,event):
         self.canvas.delete('all')
@@ -400,13 +405,15 @@ class KarlGame(Game):
         g=SpeedUp(Point2D(10,10),'green',self)
 
         while not self.gameover:
-            if self.counter % 10 == 5:
-                choice(self.cannons).fire()
+            # if self.counter % 10 == 5:
+            #     choice(self.cannons).fire()
             self.canvas.itemconfigure(self.scoreLabel,text='Score: '+str(self.score))
             if self.score > self.highscore:
                 self.newHighscore = True
                 self.highscore = self.score
                 self.canvas.itemconfigure(self.highscoreLabel,text='Highscore: '+str(self.highscore))
+            if self.speedTimer > 0:
+                self.speedTimer -= 1
             self.counter += 1
             self.score += 1
             sleep(1.0/60.0)

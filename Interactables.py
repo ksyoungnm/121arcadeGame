@@ -13,5 +13,6 @@ class Pickup:
 class SpeedUp(Pickup):
 
     def effect(self):
-        self.world.character.MAX_SPEED = 0.75
+        self.world.set_character_speed(0.9,200)
         self.world.canvas.delete(self.selfID)
+        self.world.pickups.remove(self)

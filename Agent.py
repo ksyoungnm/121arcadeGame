@@ -24,7 +24,7 @@ class Agent:
 
 class Controllable(Agent):
 
-    MAX_SPEED = 0.5
+    MAX_SPEED = 0.6
 
     UP_VECTOR = Vector2D(0.0,1.0)
     DOWN_VECTOR = Vector2D(0.0,-1.0)
@@ -52,29 +52,22 @@ class Controllable(Agent):
         return [upperright,lowerright,lowerleft,upperleft]
 
     def moveUp(self,event):
-        self.change_direction(True,self.UP_VECTOR)
+        self.velocity.dy += 1
     def stopUp(self,event):
-        self.change_direction(False,self.UP_VECTOR)
+        self.velocity.dy -= 1
     def moveDown(self,event):
-        self.change_direction(True,self.DOWN_VECTOR)
+        self.velocity.dy -= 1
     def stopDown(self,event):
-        self.change_direction(False,self.DOWN_VECTOR)
+        self.velocity.dy += 1
     def moveLeft(self,event):
-        self.change_direction(True,self.LEFT_VECTOR)
+        self.velocity.dx -= 1
     def stopLeft(self,event):
-        self.change_direction(False,self.LEFT_VECTOR)
+        self.velocity.dx += 1
     def moveRight(self,event):
-        self.change_direction(True,self.RIGHT_VECTOR)
+        self.velocity.dx += 1
     def stopRight(self,event):
-        self.change_direction(False,self.RIGHT_VECTOR)
-
-    def change_direction(self,movestop,direction):
-        if movestop:
-            self.velocity = self.velocity + direction * self.MAX_SPEED
-            self.velocity = self.velocity.D
-        else:
-            self.velocity = self.velocity - direction * self.MAX_SPEED
+        self.velocity.dx -= 1
 
     def update(self):
-        self.position = self.position + (self.velocity.direction() * self.MAX_SPEED)
+        self.position = self.position + (self.velocity.direction()*self.MAX_SPEED)
         self.world.walltrim(self)
