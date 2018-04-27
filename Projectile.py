@@ -9,6 +9,10 @@ class Launcher(Agent):
         self.size = 1.5
 
     def shape(self):
+        #I'm kinda proud of this, the shape of the gun is entirely calculated based on its
+        #heading, so each time it's drawn it's drawn in the right orientation. I set the heading
+        #to be equal to the vector drawn towards the player, so the guns will track the player
+        #and shape will be updated accordingly.
         dirc = self.direction
         perp = self.direction.perp()
         p1 = self.position + -dirc.over(1.5*(1/self.size)) + perp.over(3.0*(1/self.size))
@@ -25,30 +29,30 @@ class Launcher(Agent):
         return '#9494b8'
 
     def update(self):
+        #see shape note
         heading = self.world.character.position - self.position
         self.direction = heading.direction()
 
     def fire(self):
+        #creates a projectile in the direction of the player.
         Projectile(self.position,self.direction,self.world)
 
 class Projectile(Agent):
 
-    MAX_SPEED = 0.5
-
-
     def __init__(self,position,velocity,world):
         super().__init__(position,world)
         self.velocity = velocity
-        self.shapekind = 'oval'
         self.size = 0.6
+        #these next variables can only be assigned here because the bullet never changes directions.
+        #keeps me from having to calculate new directions every time the object is updated.
         self.v0 = self.velocity.over(2.0) + self.velocity.perp().over(4.0)
         self.v1 = self.velocity.over(2.0) + -self.velocity.perp().over(4.0)
         self.v2 = -self.velocity.over(2.0) + -self.velocity.perp().over(4.0)
         self.v3 = -self.velocity.over(2.0) + self.velocity.perp().over(4.0)
-        self.hit_radius = 0.4
         self.world.bullets.append(self)
 
     def shape(self):
+        #see above note
         p0 = self.position + self.v0
         p1 = self.position + self.v1
         p2 = self.position + self.v2
@@ -59,7 +63,9 @@ class Projectile(Agent):
         return "#FF0000"
 
     def update(self):
-        self.position = self.position + (self.velocity * self.MAX_SPEED)
+        #moves forward at a rate dependent on the game's bullet_speed parameter, and removes itself
+        #if it hits a wall.
+        self.position = self.position + (self.velocity * self.world.bullet_speed)
         leading_edge = self.position + self.velocity.over(4.0)
         if (leading_edge.x > self.world.wallbounds.xmax) or (leading_edge.x < self.world.wallbounds.xmin) or (leading_edge.y > self.world.wallbounds.ymax) or (leading_edge.y < self.world.wallbounds.ymin):
             self.world.remove(self)

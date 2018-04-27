@@ -5,6 +5,7 @@ class Game(Frame):
 
     def __init__(self,name,w,h,ww,wh,topology='wrapped'):
 
+        #initializes world and window geometry
         self.WINDOW_WIDTH = ww
         self.WINDOW_HEIGHT = wh
         self.bounds = Bounds(-w/2,-h/2,w/2,h/2)
@@ -20,11 +21,15 @@ class Game(Frame):
         self.bind_all('<KeyPress>',self.keypress)
         self.bind_all('<KeyRelease>',self.keyrelease)
 
+        #makes background canvas
         self.canvas = Canvas(self, width=self.WINDOW_WIDTH, height=self.WINDOW_HEIGHT, bg='purple')
         
         self.grid()
         self.canvas.grid()
 
+        #sets the top left corner of the display window to the actual (0,0). Was having
+        #some weird issues with the edges of the world before, like the window was
+        #at (3,3) instead or something weird like that.
         self.canvas.xview_moveto(0.0)
         self.canvas.yview_moveto(0.0)
         
@@ -50,6 +55,9 @@ class Game(Frame):
         pass
 
     def worldToPixel(self,shape):
+        #broke up the drawing function in order to get the translation of world geometry
+        #to window geometry. v handy in lots of situations where I don't want something
+        #drawn immediately but I want to know the window points.
         wh,ww = self.WINDOW_HEIGHT,self.WINDOW_WIDTH
         h = self.bounds.height()
         x = self.bounds.xmin
